@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/v1")
 class MyController {
     init {
-        println("INIT!")
+        println("MY CONTROLLER!")
     }
 
     @GetMapping
