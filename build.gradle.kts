@@ -71,3 +71,20 @@ tasks.create("bootE2ESupportJar", BootJar::class.java) {
     classpath(sourceSets["testData"].output)
     classpath(tasks.bootJar.get().classpath)
 }
+
+tasks.create("testDataJar", Jar::class.java) {
+    dependsOn("compileTestDataKotlin", "bootJar")
+    archiveClassifier.set("test-data")
+    from(sourceSets["testData"].output)
+}
+
+// https://stackoverflow.com/questions/39716796/spring-boot-executable-jar-with-classpath
+// ClassNotFoundException: com.example.fixturepackaging.ProdDataType
+// ~/.jdks/temurin-17.0.6/bin/java -cp build/libs/fixture-packaging-0.0.1-SNAPSHOT-e2e-support.jar:build/libs/fixture-packaging-0.0.1-SNAPSHOT.jar:build/libs/fixture-packaging-0.0.1-SNAPSHOT-test-data.jar -Dloader.main=com.example.fixturepackaging.FixturePackagingApplicationKt org.springframework.boot.loader.PropertiesLauncher
+// ClassNotFoundException: com.example.fixturepackaging.ProdDataType
+// ~/.jdks/temurin-17.0.6/bin/java -cp build/libs/fixture-packaging-0.0.1-SNAPSHOT-e2e-support.jar:build/libs/fixture-packaging-0.0.1-SNAPSHOT.jar:build/libs/fixture-packaging-0.0.1-SNAPSHOT-test-data.jar org.springframework.boot.loader.JarLauncher
+tasks.create("e2eSupportJar", Jar::class.java) {
+    dependsOn("compileE2eSupportKotlin", "bootJar")
+    archiveClassifier.set("e2e-support")
+    from(sourceSets["e2eSupport"].output)
+}
