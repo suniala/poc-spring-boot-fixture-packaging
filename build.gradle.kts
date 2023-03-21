@@ -30,25 +30,19 @@ sourceSets {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-web")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin")
-    api("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    // Configuration with name 'main' not found.
-    // configurations["testDataImplementation"](project.configurations["main"])
-    // Works in gradle but prod sources not imported to testData
-    //    configurations["testDataApi"](project.configurations["api"])
     configurations["testDataImplementation"](project)
+    configurations["testDataImplementation"]("org.springframework:spring-context")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(sourceSets["testData"].output)
 
-    // Cannot convert the provided notation to an object of type Dependency: source set 'test data'.
-    //    configurations["e2eSupportImplementation"](project.sourceSets["testData"])
-    // Project with path 'fixture-packaging' could not be found in root project 'fixture-packaging'.
-    //    configurations["e2eSupportImplementation"](project(path="fixture-packaging", configuration="testDataImplementation"))
     configurations["e2eSupportImplementation"](project)
     configurations["e2eSupportImplementation"](sourceSets["testData"].output)
+    configurations["e2eSupportImplementation"]("org.springframework:spring-web")
 }
 
 tasks.withType<KotlinCompile> {
