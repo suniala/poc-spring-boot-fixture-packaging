@@ -62,42 +62,13 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.named<BootJar>("bootJar") {
-    this.classpath.forEach {
-        println(it)
-    }
-}
-
-// Task with name 'bootE2ESupportJar' not found in root project 'fixture-packaging'.
-//tasks.named<BootJar>("bootE2ESupportJar") {
-//    mainClass.set("com.example.fixturepackaging.FixturePackagingApplicationKt")
-//}
-
 tasks.create("bootE2ESupportJar", BootJar::class.java) {
     dependsOn("compileE2eSupportJava", "bootJar")
     archiveClassifier.set("e2e-support")
     mainClass.set("com.example.fixturepackaging.FixturePackagingApplicationKt")
     targetJavaVersion.set(JavaVersion.VERSION_17)
 
-    // Resolving dependency configuration 'e2eSupportImplementation' is not allowed as it is defined as 'canBeResolved=false'.
-//    classpath(configurations["e2eSupportImplementation"])
-//    classpath(configurations["e2eSupportRuntimeOnly"])
-    // Classes become packaged but controller is not initialized when:
-    // java -jar build/libs/fixture-packaging-0.0.1-SNAPSHOT.jar -cp build/libs/fixture-packaging-0.0.1-SNAPSHOT-e2e-support.jar
     classpath(sourceSets["e2eSupport"].output)
+    classpath(sourceSets["testData"].output)
+    classpath(tasks.bootJar.get().classpath)
 }
-
-tasks.create("testDataJar", Jar::class.java) {
-    dependsOn("compileTestDataKotlin", "bootJar")
-    archiveClassifier.set("test-data")
-    from(sourceSets["testData"].output)
-}
-
-// does not load e2e beans:
-// ~/.jdks/temurin-17.0.6/bin/java -cp fixture-packaging-0.0.1-SNAPSHOT-e2e-support.jar:fixture-packaging-0.0.1-SNAPSHOT-test-data.jar -jar fixture-packaging-0.0.1-SNAPSHOT.jar
-tasks.create("e2eSupportJar", Jar::class.java) {
-    dependsOn("compileE2eSupportKotlin", "bootJar")
-    archiveClassifier.set("e2e-support")
-    from(sourceSets["e2eSupport"].output)
-}
-
