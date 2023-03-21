@@ -29,20 +29,26 @@ sourceSets {
     }
 }
 
+fun DependencyHandler.testDataImplementation(dependencyNotation: Any): Dependency? =
+    add("testDataImplementation", dependencyNotation)
+
+fun DependencyHandler.e2eSupportImplementation(dependencyNotation: Any): Dependency? =
+    add("e2eSupportImplementation", dependencyNotation)
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    configurations["testDataImplementation"](project)
-    configurations["testDataImplementation"]("org.springframework:spring-context")
+    testDataImplementation(project)
+    testDataImplementation("org.springframework:spring-context")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(sourceSets["testData"].output)
 
-    configurations["e2eSupportImplementation"](project)
-    configurations["e2eSupportImplementation"](sourceSets["testData"].output)
-    configurations["e2eSupportImplementation"]("org.springframework:spring-web")
+    e2eSupportImplementation(project)
+    e2eSupportImplementation(sourceSets["testData"].output)
+    e2eSupportImplementation("org.springframework:spring-web")
 }
 
 tasks.withType<KotlinCompile> {
@@ -57,7 +63,6 @@ tasks.withType<Test> {
 }
 
 tasks.create("bootE2ESupportJar", BootJar::class.java) {
-    dependsOn("compileE2eSupportJava", "bootJar")
     archiveClassifier.set("e2e-support")
     mainClass.set("com.example.fixturepackaging.FixturePackagingApplicationKt")
     targetJavaVersion.set(JavaVersion.VERSION_17)
